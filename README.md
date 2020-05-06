@@ -1,8 +1,8 @@
 # otus_linux repository by Yuliya Kharchenko
 
 ## Table of contents
-- [Инструкции]()
-- [HW 1. С чего начинается Linux]()
+- [Инструкции](https://github.com/Lisskha/otus-linux#%D0%B8%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%86%D0%B8%D0%B8)
+- [HW 1. С чего начинается Linux](01_Linux_core/README.md)
 
 # Инструкции
 
@@ -11,4 +11,4 @@
 
 ## otus-linux
 
-Используйте этот [Vagrantfile](Vagrantfile) - для тестового стенда.
+Используйте этот [Vagrantfile](01_Linux_core/Vagrantfile) - для тестового стенда.
