@@ -4,10 +4,14 @@ PR:
 
 ## Table of contents
 - [Установка ПО](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%BF%D0%BE)
-- [Kernel update]()
-    - [Настройка окружения]()
-    - [Kernel update]()
-    - [Grub update]()
+- [Kernel update](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#kernel-update)
+    - [Настройка окружения](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0-%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F)
+    - [Kernel update](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#kernel-update-1)
+    - [Grub update](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#grub-update)
+- [Packer]()
+    - [Packer provision config]()
+    - [Packer build]()
+    - [Тестирование]()
 - [Задиние со *](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B8%D0%BD%D0%B8%D0%B5-%D1%81%D0%BE-)
 - [Задание с **](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-)
 
@@ -108,10 +112,120 @@ PR:
     [root@kernel-update vagrant]# reboot
 
     $ vagrant ssh kernel-update
-    
+
     [vagrant@kernel-update ~]$ uname -r
     5.6.10-1.el7.elrepo.x86_64
     ```
+---
+
+## Packer
+> Необходимо создать свой образ системы, с уже установленым ядром 5й версии.  
+- Перекинула из репы manual_kernel_update в свою репу каталог packer. В директории packer есть все необходимые настройки и скрипты для создания необходимого образа системы.
+
+### Packer provision config
+- Файл `centos.json` - packer шаблон, с помощью которого собираем baked-образ. Обратим внимание на основные секции или ключи.
+- Создаем переменные (**variables**) с версией и названием нашего проекта (**artifact**):
+    ```sh
+    "variables": {
+        "artifact_description": "CentOS 7.7 with kernel 5.x",
+        "artifact_version": "7.7.1908",
+    ```
+- В секции **`builders`** задаем исходный образ, для создания своего в виде ссылки и контрольной суммы. Параметры подключения к создаваемой виртуальной машине
+    ```sh
+      "iso_url": "http://mirror.yandex.ru/centos/7.7.1908/isos/x86_64/CentOS-7-x86_64-Minimal-1908.iso",
+      "iso_checksum": "9a2c47d97b9975452f7d582264e9fc16d108ed8252ac6816239a3b58cef5c53d",
+      "iso_checksum_type": "sha256",
+    ```
+- В секции **`post-processors`** указываем имя файла, куда будет сохранен образ, в случае успешной сборки
+    ```sh
+      "output": "centos-{{user `artifact_version`}}-kernel-5-x86_64-Minimal.box",
+    ```
+- В секции **`provisioners`** указываем каким образом и какие действия необходимо произвести для настройки виртуальой машины. Именно в этой секции мы и обновим ядро системы, чтобы можно было получить образ с 5й версией ядра. Настройка системы выполняется несколькими скриптами, заданными в секции **scripts**.
+    ```sh
+          "scripts" :
+            [
+              "scripts/stage-1-kernel-update.sh",
+              "scripts/stage-2-clean.sh"
+            ]
+    ```
+- `Скрипты будут выполнены в порядке указания`. Первый скрипт включает себя набор команд, которые мы ранее выполняли вручную, чтобы обновить ядро. Второй скрипт занимается подготовкой системы к упаковке в образ. Она заключается в очистке директорий с логами, временными файлами, кешами. Это позволяет уменьшить результирующий образ.
+
+### Packer build
+- Проверка шаблона на ошибки и запуск билда:
+    ```sh
+    $ packer validate ./centos.json
+    Template validated successfully.
+
+    $ packer build centos.json
+    ```
+1908 деприкейтед и выдает ошибку 404 при попытке скачать исошник с зеркала. В файле centos.json внесла изменения:
+```sh
+  "variables": {
+    "artifact_description": "CentOS 7.8 with kernel 5.x",
+    "artifact_version": "7.8.2003",
+    "image_name": "centos-7.8"
+  },
+
+  "builders": [
+    {
+        ...
+        "iso_url": "https://mirror.yandex.ru/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso",
+        "iso_checksum": "659691c28a0e672558b003d223f83938f254b39875ee7559d1a4a14c79173193",
+```
+- Успешная сбоорка образа:
+    ```sh
+    ==> Builds finished. The artifacts of successful builds are:
+    --> centos-7.8: 'virtualbox' provider box: centos-7.8.2003-kernel-5-x86_64-Minimal.box
+    ```
+    Был скачан исходный iso-образ CentOS, установлен на виртуальную машину в автоматическом режиме, обновлено ядро и осуществлен экспорт в указанный нами файл. В текущей дире появился файл `centos-7.8.2003-kernel-5-x86_64-Minimal.box`
+
+### Тестирование
+- Проведем тестирование созданного образа. Выполним его `импорт в vagrant`:
+    ```sh
+    $ vagrant box add --name centos-7-5 centos-7.8.2003-kernel-5-x86_64-Minimal.box
+
+    ==> box: Successfully added box 'centos-7-5' (v0) for 'virtualbox'!
+    ```
+- Проверим его в списке имеющихся образов:
+    ```sh
+    $ vagrant box list
+    centos-7-5      (virtualbox, 0)
+    ```
+- Теперь необходимо провести тестирование полученного образа. Для этого создадим диру test, скопируем туда Vagrantfile, произведем замену значения `box_name` на имя импортированного образа:
+    ```sh
+    :box_name => "centos-7-5",
+    ```
+> Для нового Vagrantfile в дире test можно запустить `vagrant init centos-7-5`
+- Теперь запустим виртуальную машину, подключимся к ней и проверим, что у нас в ней новое ядро:
+    ```sh
+    $ vagrant up
+    ...
+    $ vagrant ssh kernel-update
+    [vagrant@kernel-update ~]$ uname -rs
+    Linux 3.10.0-1127.el7.x86_64
+    ```
+    Машина загрузилась не с новым ядром.. Пошла править пакер.  
+
+**`Fix`**
+- Удалила тестовый образ из локального хранилища:
+    ```sh
+    $ vagrant box remove centos-7-5
+    Removing box 'centos-7-5' (v0) with provider 'virtualbox'...
+
+    # Проверила, что образа больше нет
+    $ vagrant box list
+    # Виртуалка осталась запущенной
+    $ vagrant status
+    kernel-update             running (virtualbox)
+    # Удалила ВМ
+    $ vagrant destroy kernel-update
+    ==> kernel-update: Destroying VM and associated drives...
+    ```
+
+
+
+
+
 
 
 
@@ -124,5 +238,5 @@ PR:
 ## Задание с **
 
 
-[Вернуться к оглавлению ^]()
+[Наверх ^](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#hw-1-%D1%81-%D1%87%D0%B5%D0%B3%D0%BE-%D0%BD%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D1%82%D1%81%D1%8F-linux)
 
