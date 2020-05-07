@@ -221,6 +221,11 @@ PR:
     $ vagrant destroy kernel-update
     ==> kernel-update: Destroying VM and associated drives...
     ```
+- В пакере поправила провижинеров, скрипт `stage-2-clean.sh`, запусттила сборку образа, и на его основаании создание бокса в вагранте. 
+    ```sh
+    [vagrant@kernel-update ~]$ uname -rs
+    Linux 5.6.11-1.el7.elrepo.x86_64
+    ```
 
 
 

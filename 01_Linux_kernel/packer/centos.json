@@ -12,11 +12,11 @@
       "vm_name": "packer-centos-vm",
 
       "boot_wait": "10s",
-      "disk_size": "10240",
+      "disk_size": "20480",
       "guest_os_type": "RedHat_64",
       "http_directory": "http",
 
-      "iso_url": "https://mirror.yandex.ru/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso",
+      "iso_url": "./CentOS-7-x86_64-Minimal-2003.iso",
       "iso_checksum": "659691c28a0e672558b003d223f83938f254b39875ee7559d1a4a14c79173193",
       "iso_checksum_type": "sha256",
 
@@ -61,10 +61,7 @@
   "provisioners": [
     {
       "type": "shell",
-      "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "start_retry_timeout": "1m",
       "expect_disconnect": true,
-      "pause_before": "20s",
       "override": {
         "{{user `image_name`}}" : {
           "scripts" :
@@ -73,7 +70,8 @@
               "scripts/stage-2-clean.sh"
             ]
         }
-      }
+      },
+      "execute_command": "sudo {{.Path}}"
     }
   ]
 }
