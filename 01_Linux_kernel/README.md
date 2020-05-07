@@ -12,7 +12,7 @@ PR:
     - [Packer provision config](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer-provision-config)
     - [Packer build](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer-build)
     - [Тестирование](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
-- [Vagrant cloud]()
+- [Vagrant cloud](https://github.com/Lisskha/otus-linux/blob/master/01_Linux_kernel/README.md#vagrant-cloud)
 - [Задиние со *](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B8%D0%BD%D0%B8%D0%B5-%D1%81%D0%BE-)
 - [Задание с **](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-)
 
