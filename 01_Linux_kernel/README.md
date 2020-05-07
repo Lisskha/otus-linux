@@ -3,13 +3,13 @@
 PR:  
 
 ## Table of contents
-- [Установка ПО](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_core#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%BF%D0%BE)
+- [Установка ПО](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%BF%D0%BE)
 - [Kernel update]()
     - [Настройка окружения]()
     - [Kernel update]()
     - [Grub update]()
-- [Задиние со *](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_core#%D0%B7%D0%B0%D0%B4%D0%B8%D0%BD%D0%B8%D0%B5-%D1%81%D0%BE-)
-- [Задание с **](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_core#%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-)
+- [Задиние со *](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B8%D0%BD%D0%B8%D0%B5-%D1%81%D0%BE-)
+- [Задание с **](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-)
 
 ### Для выполнения работы потребуются следующие инструменты:
 - **VirtualBox** - среда виртуализации, позволяет создавать и выполнять виртуальные машины;
@@ -26,7 +26,7 @@ PR:
 
 **Vagrant**
 - [Vagrant Cloud](https://app.vagrantup.com/boxes/search) - хранилище Vagrant боксов, используется для скачивания образов по дефолту
-- Конфиг файл для описания ВМ, которые будут созданы - [Vagrantfile](01_Linux_core/Vagrantfile); немношк о [Vagrantfile](https://otus.ru/media-private/0a/ca/Linux_Vagrant__2-5522-0aca54.pdf?hash=wPBxgoBxiatrsCT9J2ZkSw&expires=1588808901)
+- Конфиг файл для описания ВМ, которые будут созданы - [Vagrantfile](01_Linux_kernel/Vagrantfile); немношк о [Vagrantfile](https://otus.ru/media-private/0a/ca/Linux_Vagrant__2-5522-0aca54.pdf?hash=wPBxgoBxiatrsCT9J2ZkSw&expires=1588808901)
 - Скачала и установила [VirtualBox for OS X](https://www.virtualbox.org/wiki/Downloads)
     ```sh
     VirtualBox
@@ -51,7 +51,7 @@ PR:
 ## Kernel update
 
 ### Настройка окружения
-- Форкнула и склонила репу, перенесла Vagrantfile в каталог 01_Linux_core в своей репе, в нем запустила создание виртуалок:
+- Форкнула и склонила репу, перенесла Vagrantfile в каталог 01_Linux_kernel в своей репе, в нем запустила создание виртуалок:
     ```sh
     $ git clone git@github.com:Lisskha/manual_kernel_update.git
 
