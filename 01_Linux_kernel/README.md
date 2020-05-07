@@ -8,10 +8,11 @@ PR:
     - [Настройка окружения](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0-%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F)
     - [Kernel update](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#kernel-update-1)
     - [Grub update](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#grub-update)
-- [Packer]()
-    - [Packer provision config]()
-    - [Packer build]()
-    - [Тестирование]()
+- [Packer](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer)
+    - [Packer provision config](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer-provision-config)
+    - [Packer build](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer-build)
+    - [Тестирование](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
+- [Vagrant cloud]()
 - [Задиние со *](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B8%D0%BD%D0%B8%D0%B5-%D1%81%D0%BE-)
 - [Задание с **](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-)
 
@@ -226,17 +227,29 @@ PR:
     [vagrant@kernel-update ~]$ uname -rs
     Linux 5.6.11-1.el7.elrepo.x86_64
     ```
+---
 
-
-
-
-
-
-
-
-
-
-
+## Vagrant cloud
+- Делимся созданным образом. Для этого зальем его в `Vagrant Cloud`. Vagrant позволяет заливать через CLI. Логинимся в vagrant cloud, указывая e-mail, пароль и описание выданого токена (можно оставить по-умолчанию):
+    ```sh
+    $ vagrant cloud auth login
+    Vagrant Cloud username or email: <my_email>
+    Password (will be hidden):
+    Token description (Defaults to "Vagrant login from MacBook-Pro.local"):
+    You are now logged in.
+    ```
+- Теперь публикуем полученный бокс:
+    ```sh
+    $ vagrant cloud publish --release <vagrant_username>/centos-7-5 1.0 virtualbox ../packer/centos-7.8.2003-kernel-5-x86_64-Minimal.box
+    ```
+    - `cloud publish` - загрузить образ в облако;
+    - `release` - указывает на необходимость публикации образа после загрузки;
+    - `<username>/centos-7-5` - username, указаный при публикации и имя образа;
+    - `1.0` - версия образа;
+    - `virtualbox` - провайдер;
+    - `centos-7.7.1908-kernel-5-x86_64-Minimal.box` - имя файла загружаемого образа;
+- В результате создан и загружен в vagrant cloud образ виртуальной машины. Данный подход позволяет создать базовый образ виртульной машины с необходимыми обновлениями или набором предустановленного ПО. К примеру при создании MySQL-кластера можно создать образ с предустановленным MySQL, а при развертывании нужно будет добавить или изменить только настройки (то есть отличающуюся часть). Таким образом существенно экономя затрачиваемое время.
+---
 
 ## Задиние со *
 
