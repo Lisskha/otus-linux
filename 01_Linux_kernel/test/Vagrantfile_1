@@ -1,9 +1,9 @@
 # Describe VMs
 MACHINES = {
-  # VM name "kernel custom"
-  :"kernel-custom" => {
+  # VM name "kernel update"
+  :"kernel-update" => {
               # VM box
-              :box_name => "centos-7-5-c",
+              :box_name => "centos-7-5",
               # VM CPU count
               :cpus => 2,
               # VM RAM size (Mb)

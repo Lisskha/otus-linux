@@ -12,7 +12,7 @@ PR:
     - [Packer provision config](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer-provision-config)
     - [Packer build](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#packer-build)
     - [Тестирование](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
-- [Vagrant cloud]()
+- [Vagrant cloud](https://github.com/Lisskha/otus-linux/blob/master/01_Linux_kernel/README.md#vagrant-cloud)
 - [Задиние со *](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B8%D0%BD%D0%B8%D0%B5-%D1%81%D0%BE-)
 - [Задание с **](https://github.com/Lisskha/otus-linux/tree/master/01_Linux_kernel#%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-)
 
@@ -31,7 +31,7 @@ PR:
 
 **Vagrant**
 - [Vagrant Cloud](https://app.vagrantup.com/boxes/search) - хранилище Vagrant боксов, используется для скачивания образов по дефолту
-- Конфиг файл для описания ВМ, которые будут созданы - [Vagrantfile](01_Linux_kernel/Vagrantfile); немношк о [Vagrantfile](https://otus.ru/media-private/0a/ca/Linux_Vagrant__2-5522-0aca54.pdf?hash=wPBxgoBxiatrsCT9J2ZkSw&expires=1588808901)
+- Конфиг файл для описания ВМ, которые будут созданы - [Vagrantfile](Vagrantfile); немношк о [Vagrantfile](https://otus.ru/media-private/0a/ca/Linux_Vagrant__2-5522-0aca54.pdf?hash=wPBxgoBxiatrsCT9J2ZkSw&expires=1588808901)
 - Скачала и установила [VirtualBox for OS X](https://www.virtualbox.org/wiki/Downloads)
     ```sh
     VirtualBox
@@ -252,6 +252,96 @@ PR:
 ---
 
 ## Задиние со *
+Собрать ядро из исходников.  
+- Проверить нынешнее ядро
+    ```sh
+    [vagrant@kernel-update ~]$ uname -rs
+    Linux 3.10.0-957.12.2.el7.x86_64
+    ```
+- Обновить пакеты и установить необходимые
+    ```sh
+    sudo yum update -y
+    sudo yum makecache
+    sudo yum install -y ncurses-devel make gcc bc openssl-devel elfutils-libelf-devel rpm-build wget
+    ```
+- Качнуть последнюю стабильную версию ядра  
+  https://www.kernel.org/
+    ```sh
+    sudo cd /opt/ && sudo wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.6.11.tar.xz
+    ```
+- Разархивировать и зайти в каталог
+    ```sh
+    sudo tar xvf linux-5.6.11.tar.xz
+    cd linux-5.6.11/
+    ```
+- Скопировала действующее ядро и запустила make
+    ```sh
+    sudo cp -v /boot/config-3.10.0-957.12.2.el7.x86_64 .config
+
+    ‘/boot/config-3.10.0-957.12.2.el7.x86_64’ -> ‘.config’
+
+    sudo make menuconfig
+    ```
+    - make ругнулся на недостающие пакеты, установила
+        ```sh
+        sudo yum install -y flex-devel flex bison-devel bison
+        ```
+    - перезапустила и попала в конфиг меню
+        ```sh
+        sudo make menuconfig
+        ```
+    - файл `.config` обновился
+- Запустила компилирование
+    ```sh
+    sudo make rpm-pkg
+    ```
+- Посмотрела что нагенерилось и запустила установку рпмов
+    ```sh
+    sudo ls /root/rpmbuild/RPMS/x86_64/
+
+    kernel-5.6.11-1.x86_64.rpm
+    kernel-devel-5.6.11-1.x86_64.rpm
+    kernel-headers-5.6.11-1.x86_64.rpm
+
+    sudo rpm -iUv /root/rpmbuild/RPMS/x86_64/*.rpm
+    ```
+- Перезагрузка и проверка
+    ```sh
+    sudo shutdown -r now
+
+    uname -rs
+    Linux 5.6.11
+    ```
+- Вышеуказанные шаги внесла в файл [custom-1-kernel-update.sh](packer/scripts/custom-1-kernel-update.sh)
+- Переделала старый скрипт и создала файл [custom-2-clean.sh](packer/scripts/custom-2-clean.sh)
+- Файл для пакера с новыми провижинерами - [centos_custom.json](packer/centos_custom.json)
+- Проверила конфиг и запустила билд образа
+    ```sh
+    packer validate ./centos_custom.json
+    ...
+    Template validated successfully.
+
+    packer build centos_custom.json
+    ```
+    - Создался образ `centos-custom-7.8.2003-kernel-5-x86_64-Minimal.box`
+- Протестировала новый образ, закинула его в облако вагранта
+    ```sh
+    vagrant box add --name centos-7-5-c centos-custom-7.8.2003-kernel-5-x86_64-Minimal.box
+
+    подправила test/Vagrantfile
+
+    vagrant up
+    ...
+    vagrant ssh kernel-custom
+
+    uname -rs
+    Linux 5.6.11
+
+    vagrant cloud auth login
+    ...
+    vagrant cloud publish --release <vagrant_username>/centos-7-5-c 1.0 virtualbox ../packer/centos-custom-7.8.2003-kernel-5-x86_64-Minimal.box
+    ```
+---
 
 ## Задание с **
 
